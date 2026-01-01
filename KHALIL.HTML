@@ -1,0 +1,80 @@
+‎<!DOCTYPE html>
+‎<html lang="ur">
+‎<head>
+‎    <meta charset="UTF-8">
+‎    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+‎    <title>آٹو اپڈیٹ اسٹور</title>
+‎    <style>
+‎        body { font-family: Arial; direction: rtl; background: #f4f4f4; margin: 0; padding: 10px; }
+‎        .header { background: #075e54; color: white; text-align: center; padding: 15px; border-radius: 10px; }
+‎        #store-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+‎        .card { background: white; padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+‎        .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
+‎        .price { color: #25d366; font-weight: bold; font-size: 18px; }
+‎        .buy-btn { background: #25d366; color: white; border: none; padding: 8px; width: 100%; border-radius: 5px; cursor: pointer; }
+‎        #order-modal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; z-index:100; width:80%; border-radius:10px; }
+‎        .overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:50; }
+‎    </style>
+‎</head>
+‎<body>
+‎
+‎<div class="header"><h1>میرا آٹو اسٹور</h1></div>
+‎<div id="store-container">لوڈنگ ہو رہی ہے...</div>
+‎
+‎<div class="overlay" id="overlay" onclick="closeForm()"></div>
+‎<div id="order-modal">
+‎    <h3 id="p-title"></h3>
+‎    <input type="text" id="c-name" placeholder="آپ کا نام" style="width:100%; margin:5px 0; padding:8px;">
+‎    <input type="text" id="c-address" placeholder="مکمل پتہ" style="width:100%; margin:5px 0; padding:8px;">
+‎    <button class="buy-btn" onclick="sendOrder()">واٹس ایپ کریں</button>
+‎</div>
+‎
+‎<script>
+‎    // اپنی گوگل شیٹ کا لنک یہاں ڈالیں
+‎    const sheetURL = "https://docs.google.com/spreadsheets/d/11oZ6OoordFTigL0_5Nw8skO4xQcu0ESkdY7d9tqwb50/edit";
+‎    let currentP = ""; let currentPrice = "";
+‎
+‎    async function loadStore() {
+‎        const response = await fetch(sheetURL);
+‎        const data = await response.text();
+‎        const rows = data.split('\n').slice(1);
+‎        let html = '';
+‎        
+‎        rows.forEach(row => {
+‎            const cols = row.split(',');
+‎            if(cols.length >= 3) {
+‎                html += `<div class="card">
+‎                    <img src="${cols[2]}">
+‎                    <h3>${cols[0]}</h3>
+‎                    <p class="price">Rs. ${cols[1]}</p>
+‎                    <button class="buy-btn" onclick="openForm('${cols[0]}','${cols[1]}')">خریدیں</button>
+‎                </div>`;
+‎            }
+‎        });
+‎        document.getElementById('store-container').innerHTML = html;
+‎    }
+‎
+‎    function openForm(n, p) {
+‎        currentP = n; currentPrice = p;
+‎        document.getElementById('p-title').innerText = n;
+‎        document.getElementById('order-modal').style.display='block';
+‎        document.getElementById('overlay').style.display='block';
+‎    }
+‎
+‎    function closeForm() {
+‎        document.getElementById('order-modal').style.display='none';
+‎        document.getElementById('overlay').style.display='none';
+‎    }
+‎
+‎    function sendOrder() {
+‎        const name = document.getElementById('c-name').value;
+‎        const addr = document.getElementById('c-address').value;
+‎        const num = "923153018905"; // اپنا نمبر یہاں لکھیں
+‎        const msg = `آرڈر: ${currentP}%0Aقیمت: ${currentPrice}%0Aنام: ${name}%0Aپتہ: ${addr}`;
+‎        window.open(`https://wa.me/${num}?text=${msg}`);
+‎    }
+‎
+‎    loadStore();
+‎</script>
+‎</body>
+‎</html>
